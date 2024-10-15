@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles/gallery_styles.css') }}"
+    />
+    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+    <title>Your Gallery</title>
+  </head>
+
+  <body>
+    <h1>Your Gallery</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-message" style="color: red; text-align: center; transition: opacity 0.5s ease-in-out;">
+          {{ messages[0][1] }}
+        </div>
+        <script>
+          // Hide the flash message after 2 seconds
+          setTimeout(function () {
+            const flashMessage = document.querySelector('.flash-message');
+            if (flashMessage) {
+              flashMessage.style.opacity = '0';  // Fades the message out
+            }
+          }, 1000);
+
+          // Optionally, remove the message element entirely after fade-out (e.g., after 2.5 seconds)
+          setTimeout(function () {
+            const flashMessage = document.querySelector('.flash-message');
+            if (flashMessage) {
+              flashMessage.remove();
+            }
+          }, 2500);
+        </script>
+      {% endif %}
+    {% endwith %}
+
+    <nav>
+      <a href="{{ url_for('auth.logout') }}">Logout</a>
+      <a href="{{ url_for('auth.upload_file') }}">Upload</a>
+    </nav>
+
+    <div class="gallery">
+      <div class="upload-container">
+        {% for upload in uploads %}
+        <div class="upload" id="media-{{ upload.id }}">
+          <h2>
+            {{ upload.title }} {% if upload.filename.endswith(('png', 'jpg',
+            'jpeg', 'gif')) %}
+            <i class="fas fa-image" title="Image"></i>
+            {% elif upload.filename.endswith(('mp4', 'mov', 'avi')) %}
+            <i class="fas fa-video" title="Video"></i>
+            {% endif %}
+          </h2>
+
+          {% if upload.filename.endswith(('png', 'jpg', 'jpeg', 'gif')) %}
+          <img
+            src="{{ url_for('static', filename='images/' + upload.filename) }}"
+            alt="{{ upload.title }}"
+            onclick="openModal('{{ url_for('static', filename='images/' + upload.filename) }}', 'image', {{ upload.id }}, '{{ upload.share_token }}')"
+          />
+          {% elif upload.filename.endswith(('mp4', 'mov', 'avi')) %}
+          <video
+            data-src="{{ url_for('static', filename='videos/' + upload.filename) }}"
+            onclick="openModal('{{ url_for('static', filename='videos/' + upload.filename) }}', 'video', {{ upload.id }}, '{{ upload.share_token }}'); event.stopPropagation();"
+            width="200"
+            controlslist="nodownload nofullscreen noremoteplayback"
+            disablepictureinpicture
+          >
+            <source
+              src="{{ url_for('static', filename='videos/' + upload.filename) }}"
+              type="video/mp4"
+            />
+            <p>
+              Your browser does not support the video tag. Video URL: {{
+              url_for('static', filename='videos/' + upload.filename) }}
+            </p>
+          </video>
+          {% endif %}
+
+          <button onclick="deleteMedia({{ upload.id }})">Delete</button>
+        </div>
+        {% else %}
+        <p>You have no uploads yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="mediaModal" class="modal">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <img id="modalImage" class="modal-content" style="display: none" />
+
+      <div class="video-container" style="display: none">
+        <video
+          id="modalVideo"
+          class="video-js vjs-default-skin"
+          controls
+          preload="auto"
+          width="640"
+          height="264"
+          controlslist="nodownload nofullscreen noremoteplayback"
+          disablepictureinpicture
+        >
+          <source id="videoSource" src="" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+
+      <!-- Share button container -->
+      <div class="share-container" style="text-align: center; margin-top: 10px">
+        <button id="shareButton">Share</button>
+        <button
+          id="shareDiscordButton"
+          style="display: none"
+          onclick="openDiscordShareModal()"
+        >
+          Share in Discord
+        </button>
+        <!-- Initial display set to none -->
+      </div>
+
+      <!-- Discord Share Modal -->
+      <div id="discordShareModal" class="modal-content" style="display: none">
+        <h2>Share in Discord</h2>
+        <label for="uploaderName">Uploader Name:</label>
+        <input
+          type="text"
+          id="uploaderName"
+          placeholder="Enter Uploader Name"
+          autocomplete="off"
+          required
+        />
+
+        <label for="discordChannelID">Discord Channel ID:</label>
+        <input
+          type="text"
+          id="discordChannelID"
+          placeholder="Enter Discord Channel ID"
+          required
+        />
+
+        <input type="hidden" id="uploadId" />
+        <!-- Hidden input for upload ID -->
+
+        <button onclick="submitDiscordShare()">Share in Discord</button>
+        <button onclick="closeDiscordShareModal()">Cancel</button>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='scripts/gallery_scripts.js') }}"></script>
+  </body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- HTML Meta Tags -->
+    <title>{{ upload.title }}</title>
+    <meta
+      name="description"
+      content="Check out this media uploaded by Bread!"
+    />
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="{{ request.url }}" />
+    <meta property="og:title" content="{{ upload.title }}" />
+    <meta
+      property="og:description"
+      content="Check out this media uploaded by {{ username }}!"
+    />
+    <meta
+      property="og:site_name"
+      content="Bread's Video Host"
+    />
+
+    <!-- Twitter Meta Tags -->
+    <meta property="twitter:player:height" content="270" />
+    <meta property="twitter:player:width" content="492" />
+    <meta
+      property="twitter:player:stream"
+      content="{{ url_for('auth.stream_video', filename=upload.filename, _external=True, _scheme='https') }}"
+    />
+    <meta property="twitter:player:stream:content_type" content="video/mp4" />
+    <meta
+      property="og:video:secure_url"
+      content="{{ url_for('auth.stream_video', filename=upload.filename, _external=True, _scheme='https') }}"
+    />
+    <meta property="og:video:width" content="492" />
+    <meta property="og:video:height" content="270" />
+    <meta property="og:video:type" content="video/mp4" />
+    <meta property="twitter:domain" content="breadgameserver.duckdns.org" />
+    <meta name="twitter:title" content="{{ upload.title }}" />
+    <meta
+      name="twitter:description"
+      content="Check out this media uploaded by {{ username }}!"
+    />
+    <meta
+      name="twitter:image"
+      content="https://breadgameserver.duckdns.org/static/thumbnails/{{ thumbnail }}"
+    />
+    <meta name="twitter:card" content="player" />
+
+    <!-- Meta Tags Generated via https://www.opengraph.xyz -->
+
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles/view_shared_media_styles.css') }}"
+    />
+    <title>{{ username }}'s Media</title>
+  </head>
+
+  <body>
+    <header>
+      <h1>{{ upload.title }}</h1>
+      <a href="{{ url_for('auth.home') }}" class="home-button">Home</a>
+    </header>
+
+    <main class="media-container">
+      {% if upload.filename.split('.')[-1] in allowed_extensions['videos'] %}
+      <div class="video-container">
+        <video
+          id="modalVideo"
+          class="video-js vjs-default-skin"
+          controls
+          preload="auto"
+          width="1280"
+          height="720"
+          controlslist="nodownload nofullscreen noremoteplayback"
+          disablepictureinpicture
+        >
+          <source
+            id="videoSource"
+            src="{{ url_for('auth.stream_video', filename= upload.filename, _external=True, _scheme='https') }}"
+            type="video/mp4"
+          />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      {% elif upload.filename.split('.')[-1] in allowed_extensions['images'] %}
+      <img
+        src="{{ url_for('static', filename='images/' + upload.filename, _external=True, _scheme='https') }}"
+        alt="{{ upload.title }}"
+        class="media-image"
+      />
+      {% else %}
+      <p>Unsupported media type.</p>
+      {% endif %}
+    </main>
+
+    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+    <script>
+      var player = videojs("modalVideo", {
+        controls: true,
+        autoplay: false,
+        preload: "auto",
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Open Graph Tags -->
+    <meta property="og:site_name" content="Media Site" />
+    <meta property="og:title" content="{{ upload.title }}" />
+    <meta property="og:description" content="Check out this media!" />
+    <meta property="og:type"
+        content="{% if upload.filename.split('.')[-1] in allowed_extensions['videos'] %}video.other{% else %}website{% endif %}" />
+    <meta property="og:url" content="{{ request.url }}" />
+
+    <!-- Conditional tags based on media type -->
+    {% if upload.filename.split('.')[-1] in allowed_extensions['videos'] %}
+    <!-- Video specific tags -->
+    <meta property="og:video"
+        content="{{ url_for('embed_video', filename=upload.filename, _external=True, _scheme='https') }}" />
+    <meta property="og:video:secure_url"
+        content="{{ url_for('embed_video', filename=upload.filename, _external=True, _scheme='https') }}" />
+    <meta property="og:video:type" content="video/mp4" />
+    <meta property="og:video:width" content="1280" />
+    <meta property="og:video:height" content="720" /> <!-- Add height if needed -->
+    {% else %}
+
+    <!-- Image specific tags -->
+    <meta property="og:image"
+        content="{{ url_for('static', filename='images/' + upload.filename, _external=True, _scheme='https') }}" />
+    <meta property="og:image:secure_url"
+        content="{{ url_for('static', filename='images/' + upload.filename, _external=True, _scheme='https') }}" />
+    <meta property="og:image:type" content="image/png" />
+
+    {% endif %}
+    <title>Embedded Video</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000;
+        }
+
+        video {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <video controls>
+        <source src="{{ url_for('serve_video', filename=filename, _external=True, _scheme='https') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</body>
+
+</html>

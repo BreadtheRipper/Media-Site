@@ -1,0 +1,79 @@
+body {
+    background-color: #57544a; /* Dark background */
+    color: #dad4bb; /* Light text color for contrast */
+    font-family: Arial, sans-serif;
+    margin: 0; /* Remove default margin */
+    display: flex;
+    flex-direction: column; /* Stack header and main */
+    height: 100vh; /* Full viewport height */
+    position: relative;
+  }
+  
+  header {
+    padding: 20px; /* Add padding for header */
+  }
+  
+  h1 {
+    margin: 0; /* Remove margin for h1 */
+    text-align: center;
+  }
+  
+  a.home-button {
+    color: #dad4bb;
+    text-decoration: none;
+    padding: 10px 20px; /* Add padding for the button */
+    border: 2px solid #dad4bb; /* Border for button */
+    border-radius: 4px; /* Rounded corners */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    text-align: left;
+  }
+  
+  a.home-button:hover {
+    background-color: #dad4bb; /* Background on hover */
+    color: #57544a; /* Text color change on hover */
+  }
+  
+  .media-container {
+    flex-grow: 1; /* Allow main content to grow */
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+  }
+  
+  .video-container {
+    max-height: 100%; /* Responsive video container */
+    margin: auto; /* Center video */
+    width: 100%; /* Full width */
+  }
+  
+  .video-js {
+    border-radius: 8px; /* Rounded corners for video player */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+    height: 80vh; /* Responsive height */
+    width: auto; /* Maintain aspect ratio */
+  }
+  
+  /* Video.js custom styles */
+  .video-js .vjs-control-bar {
+    background-color: rgba(218, 212, 187, 0.8) !important; /* Accent color */
+  }
+  
+  .video-js .vjs-big-play-button {
+    background-color: #dad4bb !important; /* Accent color for the play button */
+    border-radius: 50% !important;
+    transition: background-color 0.2s !important;
+    left: 50% !important; /* Center horizontally */
+    top: 50% !important; /* Center vertically */
+    transform: translate(-50%, -50%) !important; /* Adjust position */
+  }
+  
+  .video-js .vjs-big-play-button:hover {
+    background-color: #c3b5a0 !important; /* Slightly darker on hover */
+  }
+  
+  .media-image {
+    height: 80vh; /* Maintain aspect ratio */
+    border-radius: 8px; /* Rounded corners for images */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Subtle shadow for images */
+  }
+  

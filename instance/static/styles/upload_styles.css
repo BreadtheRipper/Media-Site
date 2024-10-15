@@ -1,0 +1,60 @@
+body {
+    background-color: #57544a; /* Dark background */
+    color: #dad4bb; /* Light accent color */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input[type="text"],
+input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #dad4bb;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+input[type="submit"] {
+    background-color: #dad4bb;
+    color: #57544a;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #d0c1a4;
+}
+
+.progress-container {
+    margin-top: 20px;
+}
+
+.progress-bar {
+    height: 20px;
+    background-color: #dad4bb;
+    border-radius: 5px;
+    text-align: center;
+    color: #57544a;
+    transition: width 0.5s;
+}

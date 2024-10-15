@@ -1,0 +1,160 @@
+body {
+  background-color: #57544a; /* Dark background */
+  color: #dad4bb; /* Light text color for contrast */
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  text-align: center;
+}
+
+a {
+  color: #dad4bb;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.upload-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  max-width: 100%;
+  padding: 20px; /* Added padding for aesthetics */
+}
+
+.upload {
+  flex: 0 1 200px;
+  text-align: center;
+  background-color: #8e8b84; /* Slightly lighter for contrast */
+  border-radius: 8px;
+  padding: 10px;
+  transition: transform 0.2s;
+}
+
+.upload:hover {
+  transform: scale(1.05); /* Scale effect on hover */
+}
+
+img,
+video {
+  cursor: pointer;
+  width: 100%; /* Make images and videos responsive */
+  height: auto;
+  border-radius: 4px;
+}
+
+button {
+  background-color: #dad4bb; /* Accent button color */
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #c3b5a0; /* Darker accent on hover */
+}
+
+/* Styles for the modal */
+.modal {
+  display: none; /* Initially hidden */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Prevent scrolling */
+  background-color: rgba(0, 0, 0, 0.9); /* Dark overlay */
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain; /* Maintain aspect ratio without clipping */
+  background-color: #57544a; /* Your dark background color */
+  color: #dad4bb; /* Your accent color */
+  padding: 20px;
+  border-radius: 8px;
+}
+
+input {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #dad4bb;
+  border-radius: 4px;
+  width: 100%; /* Full width */
+}
+
+.video-container {
+  max-width: 80%; /* Control the width of the video */
+  position: relative; /* Allow absolute positioning for controls */
+  margin-right: 20px; /* Space between the video and share button */
+}
+
+#modalVideo {
+  width: 100%; /* Make the video fill the container */
+  height: auto; /* Maintain aspect ratio */
+  padding-bottom: 30px; /* Add space for controls, adjust as needed */
+  padding-top: 0px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: add shadow for better visibility */
+  display: block; /* Ensure it is displayed */
+}
+
+/* Customize Video.js player */
+.video-js .vjs-tech {
+  background-color: #57544a; /* Match dark background */
+  position: relative !important;
+}
+
+.video-js .vjs-control-bar {
+  background-color: rgba(218, 212, 187, 0.8); /* Accent color */
+}
+
+.video-js .vjs-big-play-button {
+  background-color: #dad4bb; /* Accent color for the play button */
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  left: 50% !important; /* Center horizontally */
+  top: 50% !important; /* Center vertically */
+  transform: translate(-50%, -50%) !important; /* Adjust position */
+}
+
+.video-js .vjs-big-play-button:hover {
+  background-color: #c3b5a0; /* Slightly darker on hover */
+}
+
+/* Close button adjustments */
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .upload {
+    flex: 0 1 100%; /* Stack uploads on smaller screens */
+  }
+
+  .video-container {
+    max-width: 95%; /* Increase video size on smaller screens */
+  }
+}

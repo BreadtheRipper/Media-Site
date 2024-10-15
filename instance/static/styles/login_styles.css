@@ -1,0 +1,96 @@
+body {
+    background-color: #57544a; /* Dark background */
+    color: #dad4bb; /* Light text color */
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+ul.flashes {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+    width: 100%;
+    max-width: 300px; /* Limit width */
+}
+
+ul.flashes li {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px; /* Rounded corners for messages */
+}
+
+ul.flashes li.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+ul.flashes li.danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+form {
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent white */
+    padding: 20px;
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+    max-width: 400px; /* Limit form width */
+    width: 100%;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+input[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    width: 100%;
+}
+
+input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+p {
+    margin-top: 20px;
+}
+
+a {
+    color: #dad4bb; /* Light text color for links */
+    text-decoration: none;
+}
+
+a.button {
+    display: inline-block;
+    margin-top: 10px;
+}
+
+a.button:hover {
+    text-decoration: underline;
+}
