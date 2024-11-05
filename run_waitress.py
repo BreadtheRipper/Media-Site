@@ -6,7 +6,7 @@ app = create_app()
 # Configure waitress with custom settings
 serve(
     app,
-    host='0.0.0.0',
+    host='192.168.0.254',
     port=5000,
     threads=16,               # Adjusted for 4 cores, 8 threads
     connection_limit=5000,    # Increased to handle many simultaneous connections

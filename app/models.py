@@ -18,8 +18,6 @@ class Upload(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     filename = db.Column(db.String(200), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Changed to user_id for clarity
-    share_token = db.Column(db.String(36), unique=True, nullable=True)  # Unique token for sharing
-
-    def __repr__(self):
-        return f'<Upload {self.title}>'
+    thumbnail = db.Column(db.String(200), nullable=False)  # Column for thumbnail filename
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    share_token = db.Column(db.String(36), unique=True, nullable=True) # Unique share token

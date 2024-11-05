@@ -1,4 +1,4 @@
-import os, re, uuid, subprocess, threading, logging, discord, asyncio, requests
+import os, re, uuid, subprocess, threading, logging, discord, asyncio, requests, boto3
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask import abort, current_app, copy_current_request_context, Flask, Response, g, send_file
 from flask_login import login_required, current_user, login_user, logout_user
@@ -7,8 +7,11 @@ from . import db, login_manager
 from .models import User, Upload
 from .discord_bot import bot, send_embed
 from datetime import datetime
+from botocore.exceptions import NoCredentialsError
 
 app= Flask(__name__)
+
+BUCKET_NAME = 'mediasite-thumbnail-storage'
 
 # Create a Blueprint for your routes
 auth_bp = Blueprint('auth', __name__)
@@ -110,17 +113,12 @@ def encode_video_and_save(input_path, output_path, job_id, title, user_id):
             logging.debug(f"Current user ID: {user_id}")  # Corrected to use user_id parameter
             with current_app.app_context():
                 delete_and_save(input_path, output_path, title, user_id)
-                generate_thumbnail(output_path)  # Generate thumbnail after encoding
         except Exception as e:
             logging.error(f"Error in delete_and_save: {e}")
     else:
         logging.error(f"Encoding failed for job ID: {job_id} with return code: {process.returncode}")
 
 def delete_and_save(input_path, output_path, title, user_id):
-    logging.debug(f"Active app context: {current_app.name}")  # Log current app name
-    logging.debug(f"Current app: {current_app}")
-    #logging.debug(f"SQLAlchemy bound to app: {db.app}")  # Ensure db is bound to the current app context
-
     try:
         if os.path.exists(input_path):
             os.remove(input_path)
@@ -128,19 +126,30 @@ def delete_and_save(input_path, output_path, title, user_id):
         else:
             logging.debug(f"Original video not found for deletion: {input_path}")
 
-        # Save the new upload info in the database
-        new_upload = Upload(title=title, filename=os.path.basename(output_path), user_id=user_id)
+        # Create a new upload instance, initially set thumbnail to placeholder
+        new_upload = Upload(title=title, filename=os.path.basename(output_path), user_id=user_id, thumbnail='placeholder.jpg')
         db.session.add(new_upload)
-        db.session.commit()
-        logging.debug(f"Upload info saved for: {os.path.basename(output_path)}")
+        db.session.commit()  # Commit to save the new upload info
 
+        logging.debug(f"Upload info saved for: {os.path.basename(output_path)} with ID: {new_upload.id}")
+
+        # Generate the thumbnail and update the record
+        thumbnail_filename = generate_thumbnail(output_path, new_upload.id)
+
+        # Update thumbnail if generated successfully
+        with current_app.app_context():
+            upload = Upload.query.get(new_upload.id)
+            if thumbnail_filename:
+                upload.thumbnail = thumbnail_filename
+            db.session.commit()
 
     except Exception as e:
         logging.error(f"Error deleting original video or saving upload info: {e}")
-        
-def generate_thumbnail(output_path):
-    thumbnail_path = os.path.join(current_app.config['UPLOAD_FOLDER_THUMBNAILS'], os.path.basename(output_path).replace('.mp4', '.jpg'))
-    timestamp = "00:00:01"  # Adjust this to capture a different time frame (01 second into the video)
+
+def generate_thumbnail(output_path, upload_id):
+    thumbnail_filename = os.path.basename(output_path).replace('.mp4', '.jpg')
+    thumbnail_path = os.path.join(current_app.config['UPLOAD_FOLDER_THUMBNAILS'], thumbnail_filename)
+    timestamp = "00:00:01"
 
     command = [
         'ffmpeg', '-i', output_path, '-ss', timestamp, '-vframes', '1',
@@ -150,9 +159,44 @@ def generate_thumbnail(output_path):
     try:
         subprocess.run(command, check=True)
         logging.debug(f"Thumbnail generated at: {thumbnail_path}")
+        
+        # After successful generation, upload the thumbnail to S3
+        upload_success = upload_image_to_s3(thumbnail_path, BUCKET_NAME, f"thumbnails/{thumbnail_filename}")
+        if upload_success:
+            print("Thumbnail uploaded to S3 successfully.")
+        
+        return thumbnail_filename  # Return the thumbnail filename on success
+
     except subprocess.CalledProcessError as e:
         logging.error(f"Error generating thumbnail: {e}")
+        return None  # Return None if thumbnail generation fails
+    
+def upload_image_to_s3(file_path, bucket_name, object_name=None):
+    """
+    Uploads a file to an S3 bucket with public read access.
 
+    :param file_path: Path to the file to upload.
+    :param bucket_name: S3 bucket name.
+    :param object_name: S3 object name. Defaults to the file name if not specified.
+    :return: True if file was uploaded successfully, else False.
+    """
+    if object_name is None:
+        object_name = os.path.basename(file_path)
+    
+    s3_client = boto3.client('s3')
+    
+    try:
+        s3_client.upload_file(
+            file_path, bucket_name, object_name,
+        )
+        print(f"Uploaded {file_path} to {bucket_name}/{object_name} successfully.")
+        return True
+    except FileNotFoundError:
+        print("File not found.")
+        return False
+    except NoCredentialsError:
+        print("AWS credentials not available.")
+        return False
 
 def clean_filename(filename):
     # Remove leading and trailing spaces
@@ -422,7 +466,9 @@ def view_shared_media(share_token):
     # Log the username
     print(f"Upload belongs to: {user.username}")
     
-    thumbnail = upload.filename.replace('.mp4', '.jpg')
+    thumbnail = upload.thumbnail  # Now using the thumbnail column from the database
+    thumbnail_url = url_for('static', filename='thumbnails/' + thumbnail, _external=True, _scheme='https')
+
     print(f"Retreived thumbnail name: {thumbnail}")
     
     # Inside your view_shared_media function

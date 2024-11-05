@@ -2,11 +2,13 @@ from flask import Flask,g, logging, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_cors import CORS
+from flask_migrate import Migrate
 from .discord_bot import run_bot
 import os, logging, threading, time, cProfile
 
 # Initialize extensions
 db = SQLAlchemy()
+migrate = Migrate()
 login_manager = LoginManager()
 
 logging.basicConfig(level=logging.DEBUG)
@@ -32,6 +34,7 @@ def create_app():
 
     # Initialize extensions with the app
     db.init_app(app)
+    migrate.init_app(app,db)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'  # Or whatever the name of your login route is
     CORS(app, resources={r"/stream_video/*": {"origins": "*"}})
@@ -55,7 +58,7 @@ def create_app():
     #threading.Thread(target=run_bot).start()
     
     # Register the single Blueprint
-    from .routes import auth_bp  # or main_bp if you rename it
+    from .routes import auth_bp
     app.register_blueprint(auth_bp)
 
     return app
