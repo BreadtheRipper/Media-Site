@@ -96,7 +96,8 @@ function shareMedia(uploadId) {
     })
     .then(data => {
         const shareUrl = `https://breadgameserver.duckdns.org/media/${data.share_token}`;
-        navigator.clipboard.writeText(shareUrl)
+        const embedURL = `[▻](https://breadgameserver.duckdns.org/media/${data.share_token})`;
+        navigator.clipboard.writeText(embedURL)
             .then(() => {
                 alert('Share URL copied to clipboard: ' + shareUrl);
             })
