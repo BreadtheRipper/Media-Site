@@ -318,7 +318,7 @@ def upload_file():
                     save_path = os.path.join(current_app.config['UPLOAD_FOLDER_IMAGES'], random_filename)
                     file.save(save_path)  # Save the file
                     # Save the new upload info in the database
-                    new_upload = Upload(title=title, filename=os.path.basename(save_path), user_id= current_user.id)
+                    new_upload = Upload(title=title, filename=os.path.basename(save_path), user_id= current_user.id, thumbnail=os.path.basename(save_path))
                     db.session.add(new_upload)
                     db.session.commit()
                     logging.debug(f"Upload info saved for: {os.path.basename(save_path)}")
